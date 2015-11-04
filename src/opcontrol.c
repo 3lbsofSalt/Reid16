@@ -33,10 +33,17 @@
  */
 
 /* MOTOR CONSTANTS
-Front Left Drive = 1
-Back Left Drive = 2
-Back Right Drive = 9
-Front Right Drive = 10 */
+
+1 = Front Right Drive
+2 = Conveyor
+3 = Left Flywheel Back
+4 = Back Left Drive
+5 = Intake
+6 = Front Left Drive
+7 = Right Flywheel Back
+8 = Left Flywheel Front
+9 = Back Right Drive
+10 = Right Flywheel Front*/
 
 #include "main.h"
 /*
@@ -57,30 +64,110 @@ Front Right Drive = 10 */
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
 void operatorControl() {
+	int flywheelSpeed = 127;
+	lcdInit(uart1);
+
+
+	int deadzone = 20; //Sets joystick deadzone in case of incorrect analog positioning
+	int xAxis; //Holds X axis for drive analog stick
+	int yAxis; //Holds Y axis for drive analog stick
+	int intakeForward; //Holds 1 or 0 from one of the left joystick shoulder buttons to tell if the intake should run forward
+	int intakeBackward; //Holds 1 or 0 from other left joystick shoulder button to tell if intake should run backward
+	int flyWheel = 0; //Holds integer checking flywheel speed
 
 	while (1) {
-		int deadzone = 20;  //Amount before joystick begins to read.
-		int leftx;
-		int rightx;
-		int righty;
-		leftx = getjoystickanalog(1, 4);
-		rightx = getjoystickanalog(1, 1);
-		righty = getjoystickanalog(1, 2);
 
-		if(abs(leftx) > deadzone){
-			motorSet(1, leftx);
-			motorSet(10, -leftx);
-			motorSet(2, -leftx);
-			motorSet(9, leftx);
+		xAxis = joystickGetAnalog(1, 1); //Assigns joystick value to X Axis variable
+		yAxis = joystickGetAnalog(1, 2); //Assigns joystick value to Y Axis variable
 
+		//DRIVE
+
+		if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
+			motorSet(6, yAxis + xAxis); //Front Left Drive
+			motorSet(4, yAxis + xAxis); //Back Left Drive
+			motorSet(9, -yAxis + xAxis); //Back Right Drive
+			motorSet(1, yAxis - xAxis); //Front Right Drive
+		} else { //Turns of drive motors if joystick is not being pressed
+			motorSet(6, 0); //Front Left Drive
+			motorSet(4, 0); //Back Left Drive
+			motorSet(9, 0); //Back Right Drive
+			motorSet(1, 0); //Front Right Drive
+		}
+
+		//INTAKE
+
+		intakeForward = joystickGetDigital(1, 5, JOY_DOWN); //Checks to see if left bottom joystick shoulder button is pressed, if so, it assigns a value of one to intakeForward
+		intakeBackward = joystickGetDigital(1, 5, JOY_UP); //Checks to see if left top joystick shoulder button is pressed if so, it assigns a value of 1 to intakeBackward
+
+		if(intakeForward){
+			motorSet(5, 127); //Intake
+			motorSet(2, 127); //Conveyor
+		} else if(intakeBackward){
+			motorSet(5, -127); //Intake
+			motorSet(2, -127); //Conveyor
 		} else {
+			motorSet(5, 0); //Intake
+			motorSet(2, 0); //Conveyor
+		}
 
-			motorStop(1);
-			motorStop(10);
-			motorStop(2);
-			motorStop(9);
+		//FLYWHEEL
+		/*
+		 * Flywheel Speeds
+		 * 0 = Off
+		 * 1 = Highest Speed Possible
+		 * 2 = Med-High (Doesn't shoot completely over field
+		 * 3 = Medium
+		 * 4 = Medium-Low
+		 * 5 = Low (Barely makes it over goal height)
+		 */
+		if(joystickGetDigital(1, 8, JOY_DOWN)){ //if bottom button on right d-pad is pressed
+			flyWheel = 0; //Turn Flywheel off
+		} else if(joystickGetDigital(1, 8, JOY_UP)){ //If Top Button on right d-pad is pressed
+			flyWheel = 1; //Set flywheel to highest possible speed
+		} else if(joystickGetDigital(1, 7, JOY_UP)){ //If top button on left d-pad is pressed
+			flyWheel = 2; //Set flywheel to med-high speed
+		} else if(joystickGetDigital(1, 7, JOY_LEFT)){ //If left button on left d-pad is pressed
+			flyWheel = 3; //Set flywheel to medium speed
+		} else if(joystickGetDigital(1, 7, JOY_DOWN)){ //If bottom button on left d-pad is pressed
+			flyWheel = 4; //Set flywheel to low speed
+		} else if(joystickGetDigital(1, 7, JOY_LEFT)){
+			flyWheel = 5;
+		}
+
+		//flyWheel = joystickGetDigital(1, 7, JOY_UP); //Checks to see if flywheel button is engaged. If it is, then the flywheel will run continually
+
+		if(flyWheel == 1){  //Highest Speed
+			motorSet(8, -127); //Left FlyWheel Front
+			motorSet(10, -127); //Right FlyWheel Front
+			motorSet(7, -127); //Right FlyWheel Back
+			motorSet(3, 127); //Left FlyWheel Back
+		} else if(flyWheel == 2){ //Should make it from starting squares
+			motorSet(8, -62); //Left FlyWheel Front
+			motorSet(10, -62); //Right FlyWheel Front
+			motorSet(7, -62); //Right FlyWheel Back
+			motorSet(3, 62); //Left FlyWheel Back
+		} else if(flyWheel == 3){ //Should make it from one square from starting tiles
+			motorSet(8, -52); //Left FlyWheel Front
+			motorSet(10, -52); //Right FlyWheel Front
+			motorSet(7, -52); //Right FlyWheel Back
+			motorSet(3, 52); //Left FlyWheel Back
+		} else if(flyWheel == 4){ //Should make it from two squares from starting tiles
+			motorSet(8, -47); //Left FlyWheel Front
+			motorSet(10, -47); //Right FlyWheel Front
+			motorSet(7, -47); //Right FlyWheel Back
+			motorSet(3, 47); //Left FlyWheel Back
+		} else if(flyWheel == 5){ //Should make it from three squares from starting tiles
+			motorSet(8, -42); //Left FlyWheel Front
+			motorSet(10, -42); //Right FlyWheel Front
+			motorSet(7, -42); //Right FlyWheel Back
+			motorSet(3, 42); //Left FlyWheel Back
+		} else if(flyWheel == 0){ //Flywheel off
+			motorSet(8, 0); //Left FlyWheel Front
+			motorSet(10, 0); //Right FlyWheel Front
+			motorSet(7, 0); //Right FlyWheel Back
+			motorSet(3, 0); //Left FlyWheel Back
 		}
 
 		delay(20);
 	}
-}
+		}
