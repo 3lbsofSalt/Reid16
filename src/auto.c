@@ -48,5 +48,48 @@
  * The autonomous task may exit, unlike operatorControl() which should never exit. If it does
  * so, the robot will await a switch to another mode or disable/enable cycle.
  */
+void flyWheelStart(int speed) { //Starts flywheel at specified motor speed
+	//Start Flywheel
+	motorSet(8, -speed); //Left FlyWheel Front
+	motorSet(10, -speed); //Right FlyWheel Front
+	motorSet(7, -speed); //Right FlyWheel Back
+	motorSet(3, speed); //Left FlyWheel Back
+}
+
+void turnTimeLeft(int speed, int time){ //Turns robot left at a specified speed for the time given.
+	//Start Left Turn
+
+	motorSet(6, speed); //Front Left Drive
+	motorSet(4, speed); //Back Left Drive
+	motorSet(9, -speed); //Back Right Drive
+	motorSet(1, speed); //Front Right Drive
+	delay(time);
+	//Stop Turn
+	motorSet(6, 0); //Front Left Drive
+	motorSet(4, 0); //Back Left Drive
+	motorSet(9, 0); //Back Right Drive
+	motorSet(1, 0); //Front Right Drive
+}
+
+void conveyorTimes(int speed, int times) { //Runs conveyor 4 seconds times the number in times variable, giving 1 second every time it goes through the loop to recharge flywheel
+	//Start Conveyor
+	int ran = 1;
+	while(ran <= times) {
+		motorSet(2, speed); //Conveyor
+		delay(4000);
+		motorSet(2, 0); //Conveyor
+		ran++;
+		delay(1000);
+	}
+}
+
+void conveyorTime(int time) {
+	motorSet(2, 127);
+	delay(time);
+	motorSet(2, 0);
+}
+
 void autonomous() {
+	flyWheelStart(58);
+	conveyorTimes(127, 5);
 }

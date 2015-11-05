@@ -64,16 +64,13 @@
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
 void operatorControl() {
-	int flywheelSpeed = 127;
-	lcdInit(uart1);
-
-
 	int deadzone = 20; //Sets joystick deadzone in case of incorrect analog positioning
 	int xAxis; //Holds X axis for drive analog stick
 	int yAxis; //Holds Y axis for drive analog stick
 	int intakeForward; //Holds 1 or 0 from one of the left joystick shoulder buttons to tell if the intake should run forward
 	int intakeBackward; //Holds 1 or 0 from other left joystick shoulder button to tell if intake should run backward
 	int flyWheel = 0; //Holds integer checking flywheel speed
+	int halfSpeed = 0;
 
 	while (1) {
 
@@ -82,16 +79,45 @@ void operatorControl() {
 
 		//DRIVE
 
-		if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
-			motorSet(6, yAxis + xAxis); //Front Left Drive
-			motorSet(4, yAxis + xAxis); //Back Left Drive
-			motorSet(9, -yAxis + xAxis); //Back Right Drive
-			motorSet(1, yAxis - xAxis); //Front Right Drive
-		} else { //Turns of drive motors if joystick is not being pressed
-			motorSet(6, 0); //Front Left Drive
-			motorSet(4, 0); //Back Left Drive
-			motorSet(9, 0); //Back Right Drive
-			motorSet(1, 0); //Front Right Drive
+		if(halfSpeed != 1){
+			//Runs Drive at FULL SPEED
+			if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
+				motorSet(6, yAxis + xAxis); //Front Left Drive
+				motorSet(4, yAxis + xAxis); //Back Left Drive
+				motorSet(9, -yAxis + xAxis); //Back Right Drive
+				motorSet(1, yAxis - xAxis); //Front Right Drive
+				halfSpeed = joystickGetDigital(1, 8, JOY_LEFT); //Gets if driver wants HALF speed
+			} else { //Turns of drive motors if joystick is not being pressed
+				motorSet(6, 0); //Front Left Drive
+				motorSet(4, 0); //Back Left Drive
+				motorSet(9, 0); //Back Right Drive
+				motorSet(1, 0); //Front Right Drive
+				halfSpeed = joystickGetDigital(1, 8, JOY_LEFT); //Gets if driver wants HALF speed
+			}
+		} else if (halfSpeed == 1) {
+			//Runs Drive at HALF SPEED
+
+			if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
+				xAxis = xAxis/2; //Sets speed to half
+				yAxis = yAxis/2;
+				motorSet(6, yAxis + xAxis); //Front Left Drive
+				motorSet(4, yAxis + xAxis); //Back Left Drive
+				motorSet(9, -yAxis + xAxis); //Back Right Drive
+				motorSet(1, yAxis - xAxis); //Front Right Drive
+				if(joystickGetDigital(1, 8, JOY_RIGHT)){
+					//Gets if driver wants FULL speed
+					halfSpeed = 0;
+				}
+			} else { //Turns of drive motors if joystick is not being pressed
+				motorSet(6, 0); //Front Left Drive
+				motorSet(4, 0); //Back Left Drive
+				motorSet(9, 0); //Back Right Drive
+				motorSet(1, 0); //Front Right Drive
+				if(joystickGetDigital(1, 8, JOY_RIGHT)){
+					//Gets if driver wants FULL speed
+					halfSpeed = 0;
+				}
+			}
 		}
 
 		//INTAKE
@@ -130,37 +156,36 @@ void operatorControl() {
 			flyWheel = 3; //Set flywheel to medium speed
 		} else if(joystickGetDigital(1, 7, JOY_DOWN)){ //If bottom button on left d-pad is pressed
 			flyWheel = 4; //Set flywheel to low speed
-		} else if(joystickGetDigital(1, 7, JOY_LEFT)){
+		} else if(joystickGetDigital(1, 7, JOY_RIGHT)){
 			flyWheel = 5;
 		}
 
-		//flyWheel = joystickGetDigital(1, 7, JOY_UP); //Checks to see if flywheel button is engaged. If it is, then the flywheel will run continually
 
 		if(flyWheel == 1){  //Highest Speed
 			motorSet(8, -127); //Left FlyWheel Front
 			motorSet(10, -127); //Right FlyWheel Front
 			motorSet(7, -127); //Right FlyWheel Back
 			motorSet(3, 127); //Left FlyWheel Back
-		} else if(flyWheel == 2){ //Should make it from starting squares
-			motorSet(8, -62); //Left FlyWheel Front
-			motorSet(10, -62); //Right FlyWheel Front
-			motorSet(7, -62); //Right FlyWheel Back
-			motorSet(3, 62); //Left FlyWheel Back
-		} else if(flyWheel == 3){ //Should make it from one square from starting tiles
-			motorSet(8, -52); //Left FlyWheel Front
-			motorSet(10, -52); //Right FlyWheel Front
-			motorSet(7, -52); //Right FlyWheel Back
-			motorSet(3, 52); //Left FlyWheel Back
-		} else if(flyWheel == 4){ //Should make it from two squares from starting tiles
-			motorSet(8, -47); //Left FlyWheel Front
-			motorSet(10, -47); //Right FlyWheel Front
-			motorSet(7, -47); //Right FlyWheel Back
-			motorSet(3, 47); //Left FlyWheel Back
-		} else if(flyWheel == 5){ //Should make it from three squares from starting tiles
-			motorSet(8, -42); //Left FlyWheel Front
-			motorSet(10, -42); //Right FlyWheel Front
-			motorSet(7, -42); //Right FlyWheel Back
-			motorSet(3, 42); //Left FlyWheel Back
+		} else if(flyWheel == 2){ //Makes it from about middle of the field
+			motorSet(8, -54); //Left FlyWheel Front
+			motorSet(10, -54); //Right FlyWheel Front
+			motorSet(7, -54); //Right FlyWheel Back
+			motorSet(3, 54); //Left FlyWheel Back
+		} else if(flyWheel == 3){ //Makes it from starting tile
+			motorSet(8, -58); //Left FlyWheel Front
+			motorSet(10, -58); //Right FlyWheel Front
+			motorSet(7, -58); //Right FlyWheel Back
+			motorSet(3, 58); //Left FlyWheel Back
+		} else if(flyWheel == 4){ //Makes it in between middle and goal (Close score)
+			motorSet(8, -50); //Left FlyWheel Front
+			motorSet(10, -50); //Right FlyWheel Front
+			motorSet(7, -50); //Right FlyWheel Back
+			motorSet(3, 50); //Left FlyWheel Back
+		} else if(flyWheel == 5){ //Makes it in between starting tiles and middle (intermediate score)
+			motorSet(8, -60); //Left FlyWheel Front
+			motorSet(10, -60); //Right FlyWheel Front
+			motorSet(7, -60); //Right FlyWheel Back
+			motorSet(3, 60); //Left FlyWheel Back
 		} else if(flyWheel == 0){ //Flywheel off
 			motorSet(8, 0); //Left FlyWheel Front
 			motorSet(10, 0); //Right FlyWheel Front
