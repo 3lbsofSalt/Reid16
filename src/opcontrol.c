@@ -64,6 +64,20 @@
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
 void operatorControl() {
+	//Front Drive motor is toward intake
+	//Front Flywheel motor is toward flywheel
+
+	const int frontLeftDrive = 6;
+	const int frontRightDrive = 1;
+	const int backLeftDrive = 4;
+	const int backRightDrive = 9;
+	const int conveyor = 2;
+	const int frontRightFlywheel = 10;
+	const int backRightFlywheel = 7;
+	const int frontLeftFlywheel = 8;
+	const int backLeftFlywheel = 3;
+	const int intake = 5;
+
 	int deadzone = 20; //Sets joystick deadzone in case of incorrect analog positioning
 	int xAxis; //Holds X axis for drive analog stick
 	int yAxis; //Holds Y axis for drive analog stick
@@ -82,16 +96,16 @@ void operatorControl() {
 		if(halfSpeed != 1){
 			//Runs Drive at FULL SPEED
 			if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
-				motorSet(6, yAxis + xAxis); //Front Left Drive
-				motorSet(4, yAxis + xAxis); //Back Left Drive
-				motorSet(9, -yAxis + xAxis); //Back Right Drive
-				motorSet(1, yAxis - xAxis); //Front Right Drive
+				motorSet(frontLeftDrive, yAxis + xAxis); //Front Left Drive
+				motorSet(backLeftDrive, yAxis + xAxis); //Back Left Drive
+				motorSet(backRightDrive, -yAxis + xAxis); //Back Right Drive
+				motorSet(frontRightDrive, yAxis - xAxis); //Front Right Drive
 				halfSpeed = joystickGetDigital(1, 8, JOY_LEFT); //Gets if driver wants HALF speed
 			} else { //Turns of drive motors if joystick is not being pressed
-				motorSet(6, 0); //Front Left Drive
-				motorSet(4, 0); //Back Left Drive
-				motorSet(9, 0); //Back Right Drive
-				motorSet(1, 0); //Front Right Drive
+				motorSet(frontLeftDrive, 0); //Front Left Drive
+				motorSet(backLeftDrive, 0); //Back Left Drive
+				motorSet(backRightDrive, 0); //Back Right Drive
+				motorSet(frontRightDrive, 0); //Front Right Drive
 				halfSpeed = joystickGetDigital(1, 8, JOY_LEFT); //Gets if driver wants HALF speed
 			}
 		} else if (halfSpeed == 1) {
@@ -100,19 +114,19 @@ void operatorControl() {
 			if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
 				xAxis = xAxis/2; //Sets speed to half
 				yAxis = yAxis/2;
-				motorSet(6, yAxis + xAxis); //Front Left Drive
-				motorSet(4, yAxis + xAxis); //Back Left Drive
-				motorSet(9, -yAxis + xAxis); //Back Right Drive
-				motorSet(1, yAxis - xAxis); //Front Right Drive
+				motorSet(frontLeftDrive, yAxis + xAxis); //Front Left Drive
+				motorSet(backLeftDrive, yAxis + xAxis); //Back Left Drive
+				motorSet(backRightDrive, -yAxis + xAxis); //Back Right Drive
+				motorSet(frontRightDrive, yAxis - xAxis); //Front Right Drive
 				if(joystickGetDigital(1, 8, JOY_RIGHT)){
 					//Gets if driver wants FULL speed
 					halfSpeed = 0;
 				}
 			} else { //Turns of drive motors if joystick is not being pressed
-				motorSet(6, 0); //Front Left Drive
-				motorSet(4, 0); //Back Left Drive
-				motorSet(9, 0); //Back Right Drive
-				motorSet(1, 0); //Front Right Drive
+				motorSet(frontLeftDrive, 0); //Front Left Drive
+				motorSet(backLeftDrive, 0); //Back Left Drive
+				motorSet(backRightDrive, 0); //Back Right Drive
+				motorSet(frontRightDrive, 0); //Front Right Drive
 				if(joystickGetDigital(1, 8, JOY_RIGHT)){
 					//Gets if driver wants FULL speed
 					halfSpeed = 0;
@@ -126,14 +140,14 @@ void operatorControl() {
 		intakeBackward = joystickGetDigital(1, 5, JOY_UP); //Checks to see if left top joystick shoulder button is pressed if so, it assigns a value of 1 to intakeBackward
 
 		if(intakeForward){
-			motorSet(5, 127); //Intake
-			motorSet(2, 127); //Conveyor
+			motorSet(intake, 127); //Intake
+			motorSet(conveyor, 127); //Conveyor
 		} else if(intakeBackward){
-			motorSet(5, -127); //Intake
-			motorSet(2, -127); //Conveyor
+			motorSet(intake, -127); //Intake
+			motorSet(conveyor, -127); //Conveyor
 		} else {
-			motorSet(5, 0); //Intake
-			motorSet(2, 0); //Conveyor
+			motorSet(intake, 0); //Intake
+			motorSet(conveyor, 0); //Conveyor
 		}
 
 		//FLYWHEEL
@@ -162,35 +176,35 @@ void operatorControl() {
 
 
 		if(flyWheel == 1){  //Highest Speed
-			motorSet(8, -127); //Left FlyWheel Front
-			motorSet(10, -127); //Right FlyWheel Front
-			motorSet(7, -127); //Right FlyWheel Back
-			motorSet(3, 127); //Left FlyWheel Back
+			motorSet(frontLeftFlywheel, -125); //Left FlyWheel Front
+			motorSet(frontRightFlywheel, -125); //Right FlyWheel Front
+			motorSet(backRightFlywheel, -125); //Right FlyWheel Back
+			motorSet(backLeftFlywheel, 125); //Left FlyWheel Back
 		} else if(flyWheel == 2){ //Makes it from about middle of the field
-			motorSet(8, -54); //Left FlyWheel Front
-			motorSet(10, -54); //Right FlyWheel Front
-			motorSet(7, -54); //Right FlyWheel Back
-			motorSet(3, 54); //Left FlyWheel Back
+			motorSet(frontLeftFlywheel, -54); //Left FlyWheel Front
+			motorSet(frontRightFlywheel, -54); //Right FlyWheel Front
+			motorSet(backRightFlywheel, -54); //Right FlyWheel Back
+			motorSet(backLeftFlywheel, 54); //Left FlyWheel Back
 		} else if(flyWheel == 3){ //Makes it from starting tile
-			motorSet(8, -58); //Left FlyWheel Front
-			motorSet(10, -58); //Right FlyWheel Front
-			motorSet(7, -58); //Right FlyWheel Back
-			motorSet(3, 58); //Left FlyWheel Back
+			motorSet(frontLeftFlywheel, -58); //Left FlyWheel Front
+			motorSet(frontRightFlywheel, -58); //Right FlyWheel Front
+			motorSet(backRightFlywheel, -58); //Right FlyWheel Back
+			motorSet(backLeftFlywheel, 58); //Left FlyWheel Back
 		} else if(flyWheel == 4){ //Makes it in between middle and goal (Close score)
-			motorSet(8, -50); //Left FlyWheel Front
-			motorSet(10, -50); //Right FlyWheel Front
-			motorSet(7, -50); //Right FlyWheel Back
-			motorSet(3, 50); //Left FlyWheel Back
+			motorSet(frontLeftFlywheel, -50); //Left FlyWheel Front
+			motorSet(frontRightFlywheel, -50); //Right FlyWheel Front
+			motorSet(backRightFlywheel, -50); //Right FlyWheel Back
+			motorSet(backLeftFlywheel, 50); //Left FlyWheel Back
 		} else if(flyWheel == 5){ //Makes it in between starting tiles and middle (intermediate score)
-			motorSet(8, -60); //Left FlyWheel Front
-			motorSet(10, -60); //Right FlyWheel Front
-			motorSet(7, -60); //Right FlyWheel Back
-			motorSet(3, 60); //Left FlyWheel Back
+			motorSet(frontLeftFlywheel, -60); //Left FlyWheel Front
+			motorSet(frontRightFlywheel, -60); //Right FlyWheel Front
+			motorSet(backRightFlywheel, -60); //Right FlyWheel Back
+			motorSet(backLeftFlywheel, 60); //Left FlyWheel Back
 		} else if(flyWheel == 0){ //Flywheel off
-			motorSet(8, 0); //Left FlyWheel Front
-			motorSet(10, 0); //Right FlyWheel Front
-			motorSet(7, 0); //Right FlyWheel Back
-			motorSet(3, 0); //Left FlyWheel Back
+			motorSet(frontLeftFlywheel, 0); //Left FlyWheel Front
+			motorSet(frontRightFlywheel, 0); //Right FlyWheel Front
+			motorSet(backRightFlywheel, 0); //Right FlyWheel Back
+			motorSet(backLeftFlywheel, 0); //Left FlyWheel Back
 		}
 
 		delay(20);

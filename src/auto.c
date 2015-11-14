@@ -71,18 +71,6 @@ void turnTimeLeft(int speed, int time){ //Turns robot left at a specified speed 
 	motorSet(1, 0); //Front Right Drive
 }
 
-void conveyorTimes(int speed, int times) { //Runs conveyor 4 seconds times the number in times variable, giving 1 second every time it goes through the loop to recharge flywheel
-	//Start Conveyor
-	int ran = 1;
-	while(ran <= times) {
-		motorSet(2, speed); //Conveyor
-		delay(4000);
-		motorSet(2, 0); //Conveyor
-		ran++;
-		delay(1000);
-	}
-}
-
 void conveyorTime(int time) {
 	motorSet(2, 127);
 	delay(time);
@@ -90,6 +78,6 @@ void conveyorTime(int time) {
 }
 
 void autonomous() {
-	flyWheelStart(58);
-	conveyorTimes(127, 5);
+	flyWheelStart(127);
+	conveyorTime(15000);
 }
