@@ -32,19 +32,6 @@
  * obtained from http://sourceforge.net/projects/freertos/files/ or on request.
  */
 
-/* MOTOR CONSTANTS
-
-1 = Front Right Drive
-2 = Conveyor
-3 = Left Flywheel Back
-4 = Back Left Drive
-5 = Intake
-6 = Front Left Drive
-7 = Right Flywheel Back
-8 = Left Flywheel Front
-9 = Back Right Drive
-10 = Right Flywheel Front*/
-
 #include "main.h"
 /*
  * Runs the user operator control code. This function will be started in its own task with the
@@ -67,16 +54,16 @@ void operatorControl() {
 	//Front Drive motor is toward intake
 	//Front Flywheel motor is toward flywheel
 
-	const int frontLeftDrive = 6;
-	const int frontRightDrive = 1;
-	const int backLeftDrive = 4;
-	const int backRightDrive = 9;
-	const int conveyor = 2;
-	const int frontRightFlywheel = 10;
-	const int backRightFlywheel = 7;
-	const int frontLeftFlywheel = 8;
-	const int backLeftFlywheel = 3;
-	const int intake = 5;
+	const int frontLeftDrive = 4;
+	const int frontRightDrive = 7;
+	const int backLeftDrive = 5;
+	const int backRightDrive = 6;
+	const int conveyor = 10;
+	const int frontRightFlywheel = 2;
+	const int backRightFlywheel = 3;
+	const int frontLeftFlywheel = 9;
+	const int backLeftFlywheel = 8;
+	const int intake = 1;
 
 	int deadzone = 20; //Sets joystick deadzone in case of incorrect analog positioning
 	int xAxis; //Holds X axis for drive analog stick
@@ -96,10 +83,10 @@ void operatorControl() {
 		if(halfSpeed != 1){
 			//Runs Drive at FULL SPEED
 			if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
-				motorSet(frontLeftDrive, yAxis + xAxis); //Front Left Drive
-				motorSet(backLeftDrive, yAxis + xAxis); //Back Left Drive
-				motorSet(backRightDrive, -yAxis + xAxis); //Back Right Drive
-				motorSet(frontRightDrive, yAxis - xAxis); //Front Right Drive
+				motorSet(frontLeftDrive, yAxis - xAxis); //Front Left Drive
+				motorSet(backLeftDrive, -yAxis + xAxis); //Back Left Drive
+				motorSet(backRightDrive, yAxis + xAxis); //Back Right Drive
+				motorSet(frontRightDrive, yAxis + xAxis); //Front Right Drive
 				halfSpeed = joystickGetDigital(1, 8, JOY_LEFT); //Gets if driver wants HALF speed
 			} else { //Turns of drive motors if joystick is not being pressed
 				motorSet(frontLeftDrive, 0); //Front Left Drive
@@ -114,10 +101,10 @@ void operatorControl() {
 			if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
 				xAxis = xAxis/2; //Sets speed to half
 				yAxis = yAxis/2;
-				motorSet(frontLeftDrive, yAxis + xAxis); //Front Left Drive
-				motorSet(backLeftDrive, yAxis + xAxis); //Back Left Drive
-				motorSet(backRightDrive, -yAxis + xAxis); //Back Right Drive
-				motorSet(frontRightDrive, yAxis - xAxis); //Front Right Drive
+				motorSet(frontLeftDrive, yAxis - xAxis); //Front Left Drive
+				motorSet(backLeftDrive, -yAxis + xAxis); //Back Left Drive
+				motorSet(backRightDrive, yAxis + xAxis); //Back Right Drive
+				motorSet(frontRightDrive, yAxis + xAxis); //Front Right Drive
 				if(joystickGetDigital(1, 8, JOY_RIGHT)){
 					//Gets if driver wants FULL speed
 					halfSpeed = 0;
