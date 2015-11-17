@@ -166,27 +166,27 @@ void operatorControl() {
 			motorSet(frontLeftFlywheel, -125); //Left FlyWheel Front
 			motorSet(frontRightFlywheel, -125); //Right FlyWheel Front
 			motorSet(backRightFlywheel, -125); //Right FlyWheel Back
-			motorSet(backLeftFlywheel, 125); //Left FlyWheel Back
+			motorSet(backLeftFlywheel, -125); //Left FlyWheel Back
 		} else if(flyWheel == 2){ //Makes it from about middle of the field
 			motorSet(frontLeftFlywheel, -54); //Left FlyWheel Front
 			motorSet(frontRightFlywheel, -54); //Right FlyWheel Front
 			motorSet(backRightFlywheel, -54); //Right FlyWheel Back
-			motorSet(backLeftFlywheel, 54); //Left FlyWheel Back
+			motorSet(backLeftFlywheel, -54); //Left FlyWheel Back
 		} else if(flyWheel == 3){ //Makes it from starting tile
 			motorSet(frontLeftFlywheel, -58); //Left FlyWheel Front
 			motorSet(frontRightFlywheel, -58); //Right FlyWheel Front
 			motorSet(backRightFlywheel, -58); //Right FlyWheel Back
-			motorSet(backLeftFlywheel, 58); //Left FlyWheel Back
+			motorSet(backLeftFlywheel, -58); //Left FlyWheel Back
 		} else if(flyWheel == 4){ //Makes it in between middle and goal (Close score)
 			motorSet(frontLeftFlywheel, -50); //Left FlyWheel Front
 			motorSet(frontRightFlywheel, -50); //Right FlyWheel Front
 			motorSet(backRightFlywheel, -50); //Right FlyWheel Back
-			motorSet(backLeftFlywheel, 50); //Left FlyWheel Back
+			motorSet(backLeftFlywheel, -50); //Left FlyWheel Back
 		} else if(flyWheel == 5){ //Makes it in between starting tiles and middle (intermediate score)
 			motorSet(frontLeftFlywheel, -60); //Left FlyWheel Front
 			motorSet(frontRightFlywheel, -60); //Right FlyWheel Front
 			motorSet(backRightFlywheel, -60); //Right FlyWheel Back
-			motorSet(backLeftFlywheel, 60); //Left FlyWheel Back
+			motorSet(backLeftFlywheel, -60); //Left FlyWheel Back
 		} else if(flyWheel == 0){ //Flywheel off
 			motorSet(frontLeftFlywheel, 0); //Left FlyWheel Front
 			motorSet(frontRightFlywheel, 0); //Right FlyWheel Front
