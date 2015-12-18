@@ -51,7 +51,7 @@
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
 
-Encoder speedEncOp; //Encoder Variable
+Encoder speedEnc; //Encoder Variable
 
 
 
@@ -59,13 +59,13 @@ int encoderSpeedOp(){
 	int old;
 	int new;
 
-	old = encoderGet(speedEncOp);
+	old = encoderGet(speedEnc);
 	if(old > 100000){
-		encoderReset(speedEncOp);
+		encoderReset(speedEnc);
 		old = 0;
 	}
 	delay(20);
-	new = encoderGet(speedEncOp);
+	new = encoderGet(speedEnc);
 	return new - old;
 }
 
@@ -89,8 +89,7 @@ void operatorControl() {
 	lcdSetBacklight(uart1, true);
 
 	//Encoder Variables/Init
-	speedEncOp = encoderInit(1, 2, 1);
-	encoderReset(speedEncOp);
+	encoderReset(speedEnc);
 	int speed = 0;
 
 

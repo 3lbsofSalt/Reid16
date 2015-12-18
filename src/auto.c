@@ -108,8 +108,7 @@ void stopBallControl() {
 }
 
 void autonomous() {
-	/*
-	speedEnc = encoderInit(1, 2, 1);
+/*
 	encoderReset(speedEnc);		//Reset Encoder
 
 	int targetSpeed = 84;		//Target speed variable
