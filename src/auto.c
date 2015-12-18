@@ -48,7 +48,8 @@
  * The autonomous task may exit, unlike operatorControl() which should never exit. If it does
  * so, the robot will await a switch to another mode or disable/enable cycle.
  */
-Encoder speedEnc;
+
+extern Encoder speedEnc;
 
 //Motor Constants
 const int frontLeftDrive = 4;
@@ -107,10 +108,11 @@ void stopBallControl() {
 }
 
 void autonomous() {
-	speedEnc = encoderInit(1, 2, 1); 		//Initialize encoder
+	/*
+	speedEnc = encoderInit(1, 2, 1);
 	encoderReset(speedEnc);		//Reset Encoder
 
-	int targetSpeed = 85;		//Target speed variable
+	int targetSpeed = 84;		//Target speed variable
 	int speed = 0;				//Variable to hold speed
 
 	while(1 == 1){
@@ -127,5 +129,5 @@ void autonomous() {
 			stopBallControl();
 			conveyorStop();
 		}
-	}
+	}*/
 }
