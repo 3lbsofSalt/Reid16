@@ -53,19 +53,8 @@
 
 Encoder speedEnc; //Encoder Variable
 
-//Motor Constants
-const int frontLeftDrive = 4;
-const int frontRightDrive = 7;
-const int backLeftDrive = 5;
-const int backRightDrive = 6;
-const int ballControl = 10;
-const int flywheelTwo = 2;
-const int flywheelThree = 3;
-const int flywheelOne = 9;
-const int flywheelFour = 8;
-const int intake = 1;
 
-int encoderSpeed(){
+int encoderSpeedOp(){
 	int old;
 	int new;
 
@@ -83,6 +72,17 @@ void operatorControl() {
 	//Front Drive motor is toward intake
     //Flywheel motor numbers are from bottom to top
 
+	const int frontLeftDrive = 4;
+	const int frontRightDrive = 7;
+	const int backLeftDrive = 5;
+	const int backRightDrive = 6;
+	const int ballControl = 10;
+	const int flywheelTwo = 2;
+	const int flywheelThree = 3;
+	const int flywheelOne = 9;
+	const int flywheelFour = 8;
+	const int intake = 1;
+
 	//LCD Backlight
 	lcdSetBacklight(uart1, true);
 
@@ -98,14 +98,13 @@ void operatorControl() {
 	int intakeForward; //Holds 1 or 0 from one of the left joystick shoulder buttons to tell if the intake should run forward
 	int intakeBackward; //Holds 1 or 0 from other left joystick shoulder button to tell if intake should run backward
 	int targetSpeed = 0;
-	int flyWheel = 0; //Holds integer checking flywheel speed
 	int halfSpeed = 0;
 
 	while (1) {
 
-		speed = encoderSpeed(); //Get the flywheel distance
+		speed = encoderSpeedOp(); //Get the flywheel distance
 		lcdPrint(uart1, 1, "%d TargetSpeed", targetSpeed); //Prints speed to lcd
-		lcdPrint(uart1, 2, "%d Speed", encoderSpeed());
+		lcdPrint(uart1, 2, "%d Speed", speed);
 
 		xAxis = joystickGetAnalog(1, 1); //Assigns joystick value to X Axis variable
 		yAxis = joystickGetAnalog(1, 2); //Assigns joystick value to Y Axis variable

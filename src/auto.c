@@ -76,6 +76,14 @@ int encoderSpeed(){
 	return new - old;			//Get Rotations per 20 ms
 }
 
+void conveyorStart() {
+	motorSet(intake, -127);
+}
+
+void conveyorStop() {
+	motorSet(intake, 0);
+}
+
 void flywheelStart() {			//Start Flywheel
 	motorSet(flywheelOne, 127);
 	motorSet(flywheelTwo, 127);
@@ -99,8 +107,8 @@ void stopBallControl() {
 }
 
 void autonomous() {
-	encoderInit(1, 2, 1); 		//Initialize encoder
-	encoderReset(1, 2, 1);		//Reset Encoder
+	speedEnc = encoderInit(1, 2, 1); 		//Initialize encoder
+	encoderReset(speedEnc);		//Reset Encoder
 
 	int targetSpeed = 85;		//Target speed variable
 	int speed = 0;				//Variable to hold speed
@@ -112,10 +120,12 @@ void autonomous() {
 		} else if (speed > targetSpeed + 1){//If flywheel is too fast stop motors
 			flywheelStop();
 		}
-		if((speed < targetSpeed - 2) && (speed > targetSpeed + 2)){ //If flywheel is the right speed allow balls to roll through
+		if((speed > targetSpeed - 2) && (speed < targetSpeed + 2)){ //If flywheel is the right speed allow balls to roll through
 			runBallControl();
+			conveyorStart();
 		} else {													//Otherwise, stop it
 			stopBallControl();
+			conveyorStop();
 		}
 	}
 }
