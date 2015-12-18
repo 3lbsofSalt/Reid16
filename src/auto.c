@@ -48,36 +48,74 @@
  * The autonomous task may exit, unlike operatorControl() which should never exit. If it does
  * so, the robot will await a switch to another mode or disable/enable cycle.
  */
-void flyWheelStart(int speed) { //Starts flywheel at specified motor speed
-	//Start Flywheel
-	motorSet(8, -speed); //Left FlyWheel Front
-	motorSet(10, -speed); //Right FlyWheel Front
-	motorSet(7, -speed); //Right FlyWheel Back
-	motorSet(3, speed); //Left FlyWheel Back
+Encoder speedEnc;
+
+//Motor Constants
+const int frontLeftDrive = 4;
+const int frontRightDrive = 7;
+const int backLeftDrive = 5;
+const int backRightDrive = 6;
+const int ballControl = 10;
+const int flywheelTwo = 2;
+const int flywheelThree = 3;
+const int flywheelOne = 9;
+const int flywheelFour = 8;
+const int intake = 1;
+
+int encoderSpeed(){
+	int old;
+	int new;
+
+	old = encoderGet(speedEnc); //Gets encoder before time delay
+	if(old > 100000){	 		//If too many ticks, reset for accuracy and so that the int value will hold
+		encoderReset(speedEnc);
+		old = 0;
+	}
+	delay(20);					//Allow 20 ms to pass
+	new = encoderGet(speedEnc); //Get encoder after time delay
+	return new - old;			//Get Rotations per 20 ms
 }
 
-void turnTimeLeft(int speed, int time){ //Turns robot left at a specified speed for the time given.
-	//Start Left Turn
-
-	motorSet(6, speed); //Front Left Drive
-	motorSet(4, speed); //Back Left Drive
-	motorSet(9, -speed); //Back Right Drive
-	motorSet(1, speed); //Front Right Drive
-	delay(time);
-	//Stop Turn
-	motorSet(6, 0); //Front Left Drive
-	motorSet(4, 0); //Back Left Drive
-	motorSet(9, 0); //Back Right Drive
-	motorSet(1, 0); //Front Right Drive
+void flywheelStart() {			//Start Flywheel
+	motorSet(flywheelOne, 127);
+	motorSet(flywheelTwo, 127);
+	motorSet(flywheelThree, 127);
+	motorSet(flywheelFour, 127);
 }
 
-void conveyorTime(int time) {
-	motorSet(2, 127);
-	delay(time);
-	motorSet(2, 0);
+void flywheelStop() {			//Stop Flywheel
+	motorSet(flywheelOne, 0);
+	motorSet(flywheelTwo, 0);
+	motorSet(flywheelThree, 0);
+	motorSet(flywheelFour, 0);
+}
+
+void runBallControl() {  		//Allows a ball to shoot
+	motorSet(ballControl, -127);
+}
+
+void stopBallControl() {
+	motorSet(ballControl, 0);
 }
 
 void autonomous() {
-	flyWheelStart(127);
-	conveyorTime(15000);
+	encoderInit(1, 2, 1); 		//Initialize encoder
+	encoderReset(1, 2, 1);		//Reset Encoder
+
+	int targetSpeed = 85;		//Target speed variable
+	int speed = 0;				//Variable to hold speed
+
+	while(1 == 1){
+		speed = encoderSpeed();	//Gets flywheel Speed
+		if(speed < targetSpeed - 1){		//If flywheel is not fast enough start motors
+			flywheelStart();
+		} else if (speed > targetSpeed + 1){//If flywheel is too fast stop motors
+			flywheelStop();
+		}
+		if((speed < targetSpeed - 2) && (speed > targetSpeed + 2)){ //If flywheel is the right speed allow balls to roll through
+			runBallControl();
+		} else {													//Otherwise, stop it
+			stopBallControl();
+		}
+	}
 }
