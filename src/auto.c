@@ -105,20 +105,10 @@ void runBallControl() {  		//Allows a ball to shoot
 void stopBallControl() {
 	motorSet(ballControl, 0);
 }*/
+Encoder speedEnc;
 
 void autonomous() {
-/*
-	const int ballControl = 10;
-	const int flywheelTwo = 2;
-	const int flywheelThree = 3;
-	const int flywheelOne = 9;
-	const int flywheelFour = 8;
-	const int intake = 1;
 
-	motorSet(flywheelOne, 86);
-	motorSet(flywheelTwo, 86);
-	motorSet(flywheelThree, 86);
-	motorSet(flywheelFour, 86);
-	motorSet(intake, -127);
-	motorSet(ballControl, -127);*/
+	speedEnc = encoderInit(1, 2, 1);
+	encoderReset(speedEnc);
 }

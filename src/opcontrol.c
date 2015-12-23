@@ -51,8 +51,6 @@
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
 
-Encoder speedEnc; //Encoder Variable
-
 int encoderSpeedOp(){
 	int old;
 	int new;
@@ -71,8 +69,6 @@ void operatorControl() {
 	//Front Drive motor is toward intake
     //Flywheel motor numbers are from bottom to top
 
-	encoderShutdown(speedEnc);
-
 	const int frontLeftDrive = 4;
 	const int frontRightDrive = 7;
 	const int backLeftDrive = 5;
@@ -88,7 +84,6 @@ void operatorControl() {
 	lcdSetBacklight(uart1, true);
 
 	//Encoder Variables/Init
-	speedEnc = encoderInit(1, 2, 1);
 	encoderReset(speedEnc);
 	int speed = 0;
 
