@@ -53,8 +53,6 @@
 
 Encoder speedEnc; //Encoder Variable
 
-
-
 int encoderSpeedOp(){
 	int old;
 	int new;
@@ -70,14 +68,15 @@ int encoderSpeedOp(){
 }
 
 void operatorControl() {
-
 	//Front Drive motor is toward intake
     //Flywheel motor numbers are from bottom to top
 
+	encoderShutdown(speedEnc);
+
 	const int frontLeftDrive = 4;
-	const int frontRightDrive = 6;
+	const int frontRightDrive = 7;
 	const int backLeftDrive = 5;
-	const int backRightDrive = 7;
+	const int backRightDrive = 6;
 	const int ballControl = 10;
 	const int flywheelTwo = 2;
 	const int flywheelThree = 3;
@@ -89,6 +88,7 @@ void operatorControl() {
 	lcdSetBacklight(uart1, true);
 
 	//Encoder Variables/Init
+	speedEnc = encoderInit(1, 2, 1);
 	encoderReset(speedEnc);
 	int speed = 0;
 
@@ -99,7 +99,6 @@ void operatorControl() {
 	int intakeForward; //Holds 1 or 0 from one of the left joystick shoulder buttons to tell if the intake should run forward
 	int intakeBackward; //Holds 1 or 0 from other left joystick shoulder button to tell if intake should run backward
 	int targetSpeed = 0;
-	int halfSpeed = 0;
 
 	while (1) {
 
@@ -110,45 +109,19 @@ void operatorControl() {
 		xAxis = joystickGetAnalog(1, 1); //Assigns joystick value to X Axis variable
 		yAxis = joystickGetAnalog(1, 2); //Assigns joystick value to Y Axis variable
 
+
 		//DRIVE
 
-		if(halfSpeed != 1){
-			//Runs Drive at FULL SPEED
-			if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
-				motorSet(frontLeftDrive, yAxis + xAxis); //Front Left Drive
-				motorSet(backLeftDrive, yAxis + xAxis); //Back Left Drive
-				motorSet(backRightDrive, -yAxis + xAxis); //Back Right Drive
-				motorSet(frontRightDrive, yAxis - xAxis); //Front Right Drive
-			} else { //Turns of drive motors if joystick is not being pressed
-				motorSet(frontLeftDrive, 0); //Front Left Drive
-				motorSet(backLeftDrive, 0); //Back Left Drive
-				motorSet(backRightDrive, 0); //Back Right Drive
-				motorSet(frontRightDrive, 0); //Front Right Drive
-			}
-		} else if (halfSpeed == 1) {
-			//Runs Drive at HALF SPEED
-
-			if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
-				xAxis = xAxis/2; //Sets speed to half
-				yAxis = yAxis/2;
-				motorSet(frontLeftDrive, yAxis + xAxis); //Front Left Drive
-				motorSet(backLeftDrive, yAxis + xAxis); //Back Left Drive
-				motorSet(backRightDrive, -yAxis + xAxis); //Back Right Drive
-				motorSet(frontRightDrive, yAxis - xAxis); //Front Right Drive
-				if(joystickGetDigital(1, 8, JOY_RIGHT)){
-					//Gets if driver wants FULL speed
-					halfSpeed = 0;
-				}
-			} else { //Turns of drive motors if joystick is not being pressed
-				motorSet(frontLeftDrive, 0); //Front Left Drive
-				motorSet(backLeftDrive, 0); //Back Left Drive
-				motorSet(backRightDrive, 0); //Back Right Drive
-				motorSet(frontRightDrive, 0); //Front Right Drive
-				if(joystickGetDigital(1, 8, JOY_RIGHT)){
-					//Gets if driver wants FULL speed
-					halfSpeed = 0;
-				}
-			}
+		if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
+			motorSet(frontLeftDrive, yAxis + xAxis); //Front Left Drive
+			motorSet(backLeftDrive, yAxis + xAxis); //Back Left Drive
+			motorSet(backRightDrive, yAxis - xAxis); //Back Right Drive
+			motorSet(frontRightDrive, -yAxis + xAxis); //Front Right Drive
+		} else { //Turns of drive motors if joystick is not being pressed
+			motorSet(frontLeftDrive, 0); //Front Left Drive
+			motorSet(backLeftDrive, 0); //Back Left Drive
+			motorSet(backRightDrive, 0); //Back Right Drive
+			motorSet(frontRightDrive, 0); //Front Right Drive
 		}
 
 		//INTAKE
@@ -164,7 +137,7 @@ void operatorControl() {
 		}
 
 		//BALL CONTROL LOOP
-		if((joystickGetDigital(1, 6, JOY_DOWN) && (speed > targetSpeed - 2) && (speed < targetSpeed + 2)) || joystickGetDigital(1, 7, JOY_UP)){ //Won't the ball shoot unless flywheel is at +- 3 to the correct RPM
+		if((joystickGetDigital(1, 6, JOY_DOWN) && (speed > targetSpeed - 1) && (speed < targetSpeed + 2)) || joystickGetDigital(1, 7, JOY_UP)){ //Won't the ball shoot unless flywheel is at +- 3 to the correct RPM
 			motorSet(ballControl, -127);
 		} else {
 			motorSet(ballControl, 0);
@@ -175,22 +148,23 @@ void operatorControl() {
 		//Midfield = 68
 		//1 Square away = 63
 
+
 		if(joystickGetDigital(1, 8, JOY_UP)){ //Set target speed to 85
-			targetSpeed = 84;
+			targetSpeed = 85;
 		}
 
 		if(joystickGetDigital(1, 8, JOY_LEFT)){ //Increment Target Speed
 			targetSpeed = 69;
-			delay(100);
 		}
 
 		if(joystickGetDigital(1, 8, JOY_RIGHT)){ //Decrement target speed
-			targetSpeed = 62;
+			targetSpeed = 63;
 		}
 
 		if(joystickGetDigital(1, 8, JOY_DOWN)){ //Set flywheels to off
 			targetSpeed = 0;
 		}
+
 
 		if(speed < targetSpeed - 1){ //If flywheel isn't fast enough, speed up
 			motorSet(flywheelOne, 127);

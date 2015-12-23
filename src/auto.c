@@ -49,9 +49,8 @@
  * so, the robot will await a switch to another mode or disable/enable cycle.
  */
 
-extern Encoder speedEnc;
-
 //Motor Constants
+/*
 const int frontLeftDrive = 4;
 const int frontRightDrive = 7;
 const int backLeftDrive = 5;
@@ -105,28 +104,21 @@ void runBallControl() {  		//Allows a ball to shoot
 
 void stopBallControl() {
 	motorSet(ballControl, 0);
-}
+}*/
 
 void autonomous() {
 /*
-	encoderReset(speedEnc);		//Reset Encoder
+	const int ballControl = 10;
+	const int flywheelTwo = 2;
+	const int flywheelThree = 3;
+	const int flywheelOne = 9;
+	const int flywheelFour = 8;
+	const int intake = 1;
 
-	int targetSpeed = 84;		//Target speed variable
-	int speed = 0;				//Variable to hold speed
-
-	while(1 == 1){
-		speed = encoderSpeed();	//Gets flywheel Speed
-		if(speed < targetSpeed - 1){		//If flywheel is not fast enough start motors
-			flywheelStart();
-		} else if (speed > targetSpeed + 1){//If flywheel is too fast stop motors
-			flywheelStop();
-		}
-		if((speed > targetSpeed - 2) && (speed < targetSpeed + 2)){ //If flywheel is the right speed allow balls to roll through
-			runBallControl();
-			conveyorStart();
-		} else {													//Otherwise, stop it
-			stopBallControl();
-			conveyorStop();
-		}
-	}*/
+	motorSet(flywheelOne, 86);
+	motorSet(flywheelTwo, 86);
+	motorSet(flywheelThree, 86);
+	motorSet(flywheelFour, 86);
+	motorSet(intake, -127);
+	motorSet(ballControl, -127);*/
 }

@@ -70,13 +70,6 @@ extern "C" {
  * so, the robot will await a switch to another mode or disable/enable cycle.
  */
 
-// MOTOR CONSTANTS
-#define FRONTLEFTDRIVE = 1
-#define BACKLEFTDRIVE = 2
-#define BACKRIGHTDRIVE = 9
-#define FRONTRIGHTDRIVE = 10
-
-
 
 void autonomous();
 /**
