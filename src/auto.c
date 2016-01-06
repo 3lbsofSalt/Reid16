@@ -50,7 +50,7 @@
  */
 
 //Motor Constants
-/*
+
 const int frontLeftDrive = 4;
 const int frontRightDrive = 7;
 const int backLeftDrive = 5;
@@ -104,11 +104,9 @@ void runBallControl() {  		//Allows a ball to shoot
 
 void stopBallControl() {
 	motorSet(ballControl, 0);
-}*/
-Encoder speedEnc;
+}
+
 
 void autonomous() {
 
-	speedEnc = encoderInit(1, 2, 1);
-	encoderReset(speedEnc);
 }

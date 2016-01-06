@@ -50,7 +50,7 @@
  *
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
-
+Encoder speedEnc;
 int encoderSpeedOp(){
 	int old;
 	int new;
@@ -71,19 +71,20 @@ void operatorControl() {
 
 	const int frontLeftDrive = 4;
 	const int frontRightDrive = 7;
-	const int backLeftDrive = 5;
+	const int backLeftDrive = 1;
 	const int backRightDrive = 6;
 	const int ballControl = 10;
 	const int flywheelTwo = 2;
 	const int flywheelThree = 3;
 	const int flywheelOne = 9;
 	const int flywheelFour = 8;
-	const int intake = 1;
+	const int intake = 5;
 
 	//LCD Backlight
 	lcdSetBacklight(uart1, true);
 
 	//Encoder Variables/Init
+	speedEnc = encoderInit(1, 2, 0);
 	encoderReset(speedEnc);
 	int speed = 0;
 
@@ -104,8 +105,9 @@ void operatorControl() {
 		xAxis = joystickGetAnalog(1, 1); //Assigns joystick value to X Axis variable
 		yAxis = joystickGetAnalog(1, 2); //Assigns joystick value to Y Axis variable
 
-
-		//DRIVE
+		/////////
+		//DRIVE//
+		/////////
 
 		if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
 			motorSet(frontLeftDrive, yAxis + xAxis); //Front Left Drive
@@ -119,40 +121,48 @@ void operatorControl() {
 			motorSet(frontRightDrive, 0); //Front Right Drive
 		}
 
-		//INTAKE
+		//////////
+		//INTAKE//
+		//////////
 
 		intakeForward = joystickGetDigital(1, 5, JOY_DOWN); //Checks to see if left bottom joystick shoulder button is pressed, if so, it assigns a value of one to intakeForward
 		intakeBackward = joystickGetDigital(1, 5, JOY_UP); //Checks to see if left top joystick shoulder button is pressed if so, it assigns a value of 1 to intakeBackward
 		if(intakeForward){
-			motorSet(intake, -127);
-		} else if(intakeBackward){
 			motorSet(intake, 127);
+		} else if(intakeBackward){
+			motorSet(intake, -127);
 		} else {
 			motorSet(intake, 0);
 		}
 
-		//BALL CONTROL LOOP
+		/////////////////////
+		//BALL CONTROL LOOP//
+		/////////////////////
+
 		if((joystickGetDigital(1, 6, JOY_DOWN) && (speed > targetSpeed - 1) && (speed < targetSpeed + 2)) || joystickGetDigital(1, 7, JOY_UP)){ //Won't the ball shoot unless flywheel is at +- 3 to the correct RPM
-			motorSet(ballControl, -127);
+			motorSet(ballControl, 127);
 		} else {
 			motorSet(ballControl, 0);
 		}
 
-		//FLYWHEEL
-		//From square = 85
-		//Midfield = 68
+		////////////
+		//FLYWHEEL//
+		////////////
+
+		//From square = 86
+		//Midfield = 69
 		//1 Square away = 63
 
 
 		if(joystickGetDigital(1, 8, JOY_UP)){ //Set target speed to 85
-			targetSpeed = 85;
+			targetSpeed = 86;
 		}
 
-		if(joystickGetDigital(1, 8, JOY_LEFT)){ //Increment Target Speed
+		if(joystickGetDigital(1, 8, JOY_LEFT)){ //Set target speed to 69
 			targetSpeed = 69;
 		}
 
-		if(joystickGetDigital(1, 8, JOY_RIGHT)){ //Decrement target speed
+		if(joystickGetDigital(1, 8, JOY_RIGHT)){ //Set target speed to 63
 			targetSpeed = 63;
 		}
 
