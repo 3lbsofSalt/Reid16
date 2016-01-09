@@ -83,14 +83,11 @@ void operatorControl() {
 	//LCD Backlight
 	lcdSetBacklight(uart1, true);
 
-
-	if(!speedEnc){
-		speedEnc = encoderInit(1, 2, 0);
-	}
 	//Encoder Variables/Init
-	//speedEnc = encoderInit(1, 2, 0);
+	speedEnc = encoderInit(1, 2, 0);
 	encoderReset(speedEnc);
 	int speed = 0;
+
 
 	int deadzone = 20; //Sets joystick deadzone in case of incorrect analog positioning
 	int xAxis; //Holds X axis for drive analog stick
@@ -117,7 +114,7 @@ void operatorControl() {
 			motorSet(backLeftDrive, yAxis + xAxis); //Back Left Drive
 			motorSet(backRightDrive, yAxis - xAxis); //Back Right Drive
 			motorSet(frontRightDrive, -yAxis + xAxis); //Front Right Drive
-		} else { //Turns off drive motors if joystick is not being pressed
+		} else { //Turns of drive motors if joystick is not being pressed
 			motorSet(frontLeftDrive, 0); //Front Left Drive
 			motorSet(backLeftDrive, 0); //Back Left Drive
 			motorSet(backRightDrive, 0); //Back Right Drive
@@ -152,13 +149,13 @@ void operatorControl() {
 		//FLYWHEEL//
 		////////////
 
-		//From square = 88
+		//From square = 86
 		//Midfield = 69
 		//1 Square away = 63
 
 
 		if(joystickGetDigital(1, 8, JOY_UP)){ //Set target speed to 85
-			targetSpeed = 84;
+			targetSpeed = 86;
 		}
 
 		if(joystickGetDigital(1, 8, JOY_LEFT)){ //Set target speed to 69

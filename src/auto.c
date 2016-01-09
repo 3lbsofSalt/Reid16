@@ -53,14 +53,14 @@
 
 const int frontLeftDrive = 4;
 const int frontRightDrive = 7;
-const int backLeftDrive = 1;
+const int backLeftDrive = 5;
 const int backRightDrive = 6;
 const int ballControl = 10;
 const int flywheelTwo = 2;
 const int flywheelThree = 3;
 const int flywheelOne = 9;
 const int flywheelFour = 8;
-const int intake = 5;
+const int intake = 1;
 
 int encoderSpeed(){
 	int old;
@@ -76,16 +76,12 @@ int encoderSpeed(){
 	return new - old;			//Get Rotations per 20 ms
 }
 
-void conveyorForward() {
-	motorSet(intake, 127);
+void conveyorStart() {
+	motorSet(intake, -127);
 }
 
 void conveyorStop() {
 	motorSet(intake, 0);
-}
-
-void conveyorBack() {
-	motorSet(intake, -127);
 }
 
 void flywheelStart() {			//Start Flywheel
@@ -103,36 +99,14 @@ void flywheelStop() {			//Stop Flywheel
 }
 
 void runBallControl() {  		//Allows a ball to shoot
-	motorSet(ballControl, 127);
+	motorSet(ballControl, -127);
 }
 
 void stopBallControl() {
 	motorSet(ballControl, 0);
 }
 
-Encoder speedEnc;
+
 void autonomous() {
 
-	int speed;
-	int targetSpeed = 88;
-	speedEnc = encoderInit(1, 2, 0);
-
-	flywheelStart();
-	conveyorForward();
-
-	while(1){
-		speed = encoderSpeed();
-
-		if(speed < targetSpeed - 1){
-			flywheelStart();
-		} else if (speed > targetSpeed + 1){ //If flywheel is too fast, slow down
-			flywheelStop();
-		}
-
-		if((speed > targetSpeed - 1) && (speed < targetSpeed + 2)){
-			runBallControl();
-		} else {
-			stopBallControl();
-		}
-	}
 }
