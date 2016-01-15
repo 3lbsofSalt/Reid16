@@ -84,10 +84,7 @@ void operatorControl() {
 	lcdSetBacklight(uart1, true);
 
 	//Encoder Variables/Init
-	if(!speedEnc){
-		speedEnc = encoderInit(1, 2, 0);
-	}
-
+	speedEnc = encoderInit(1, 2, 0);
 	encoderReset(speedEnc);
 	int speed = 0;
 
@@ -102,7 +99,7 @@ void operatorControl() {
 	while (1) {
 
 		speed = encoderSpeedOp(); //Get the flywheel distance
-		lcdPrint(uart1, 1, "%d TargetSpeed", targetSpeed);
+		lcdPrint(uart1, 1, "%d TargetSpeed", targetSpeed); //Prints speed to lcd
 		lcdPrint(uart1, 2, "%d Speed", speed);
 
 		xAxis = joystickGetAnalog(1, 1); //Assigns joystick value to X Axis variable
@@ -113,15 +110,15 @@ void operatorControl() {
 		/////////
 
 		if(abs(xAxis) > deadzone || abs(yAxis) > deadzone){ //Checks to see if joystick is past deadzone, if it is then it engages drive
-			motorSet(frontLeftDrive, yAxis + xAxis);
-			motorSet(backLeftDrive, yAxis + xAxis);
-			motorSet(backRightDrive, yAxis - xAxis);
-			motorSet(frontRightDrive, -yAxis + xAxis);
+			motorSet(frontLeftDrive, yAxis + xAxis); //Front Left Drive
+			motorSet(backLeftDrive, yAxis + xAxis); //Back Left Drive
+			motorSet(backRightDrive, yAxis - xAxis); //Back Right Drive
+			motorSet(frontRightDrive, -yAxis + xAxis); //Front Right Drive
 		} else { //Turns of drive motors if joystick is not being pressed
-			motorSet(frontLeftDrive, 0);
-			motorSet(backLeftDrive, 0);
-			motorSet(backRightDrive, 0);
-			motorSet(frontRightDrive, 0);
+			motorSet(frontLeftDrive, 0); //Front Left Drive
+			motorSet(backLeftDrive, 0); //Back Left Drive
+			motorSet(backRightDrive, 0); //Back Right Drive
+			motorSet(frontRightDrive, 0); //Front Right Drive
 		}
 
 		//////////
@@ -130,11 +127,11 @@ void operatorControl() {
 
 		intakeForward = joystickGetDigital(1, 5, JOY_DOWN); //Checks to see if left bottom joystick shoulder button is pressed, if so, it assigns a value of one to intakeForward
 		intakeBackward = joystickGetDigital(1, 5, JOY_UP); //Checks to see if left top joystick shoulder button is pressed if so, it assigns a value of 1 to intakeBackward
-		if(intakeForward){			//Intake
+		if(intakeForward){
 			motorSet(intake, 127);
-		} else if(intakeBackward){	//Outtake
+		} else if(intakeBackward){
 			motorSet(intake, -127);
-		} else {					//Stop Conveyor
+		} else {
 			motorSet(intake, 0);
 		}
 
@@ -158,7 +155,7 @@ void operatorControl() {
 
 
 		if(joystickGetDigital(1, 8, JOY_UP)){ //Set target speed to 85
-			targetSpeed = 85;
+			targetSpeed = 86;
 		}
 
 		if(joystickGetDigital(1, 8, JOY_LEFT)){ //Set target speed to 69

@@ -53,16 +53,16 @@
 
 const int frontLeftDrive = 4;
 const int frontRightDrive = 7;
-const int backLeftDrive = 1;
+const int backLeftDrive = 5;
 const int backRightDrive = 6;
 const int ballControl = 10;
 const int flywheelTwo = 2;
 const int flywheelThree = 3;
 const int flywheelOne = 9;
 const int flywheelFour = 8;
-const int intake = 5;
+const int intake = 1;
 
-int encoderSpeed(){				//Gets encoder speed.
+int encoderSpeed(){
 	int old;
 	int new;
 
@@ -71,21 +71,17 @@ int encoderSpeed(){				//Gets encoder speed.
 		encoderReset(speedEnc);
 		old = 0;
 	}
-	delay(20);
+	delay(20);					//Allow 20 ms to pass
 	new = encoderGet(speedEnc); //Get encoder after time delay
-	return new - old;			//Get Rotations per delay ms
+	return new - old;			//Get Rotations per 20 ms
 }
 
-void conveyorForward() {        //Intakes
-	motorSet(intake, 127);
-}
-
-void conveyorStop() {			//Stop conveyor
-	motorSet(intake, 0);
-}
-
-void conveyorBackward() { 		//Outtake
+void conveyorStart() {
 	motorSet(intake, -127);
+}
+
+void conveyorStop() {
+	motorSet(intake, 0);
 }
 
 void flywheelStart() {			//Start Flywheel
@@ -103,38 +99,14 @@ void flywheelStop() {			//Stop Flywheel
 }
 
 void runBallControl() {  		//Allows a ball to shoot
-	motorSet(ballControl, 127);
+	motorSet(ballControl, -127);
 }
 
-void stopBallControl() {		//Stop balls from shooting
+void stopBallControl() {
 	motorSet(ballControl, 0);
 }
 
 
 void autonomous() {
-	int speed;
-	int targetSpeed = 85;
-	speedEnc = encoderInit(1, 2, 0);
 
-	while(1){
-		speed = encoderSpeed();
-
-		if(speed < targetSpeed - 1){ //Flywheel control statements. Turns them on if they aren't fast enough, turns it of if it's too fast.
-			flywheelStart();
-		} else if (speed > targetSpeed + 1){ //If flywheel is too fast, slow down
-			flywheelStop();
-		}
-
-		if((speed > targetSpeed - 1) && (speed < targetSpeed + 2)){ //Ball control loop. Make the added values larger to make it less accurate
-			runBallControl();
-		} else {
-			stopBallControl();
-		}
-
-		if((speed > targetSpeed - 3) && (speed < targetSpeed + 3)){ //Conveyor control loop. Make the conveyor run a little more than the ballControl.
-			conveyorForward();
-		} else {
-			conveyorStop();
-		}
-	}
 }
