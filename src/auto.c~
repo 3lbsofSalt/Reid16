@@ -91,13 +91,6 @@ void flywheelStart() {			//Start Flywheel
   motorSet(flywheelFour, 127);
 }
 
-void flywheelHalf() {			//Start Flywheel
-  motorSet(flywheelOne, 50);
-  motorSet(flywheelTwo, 50);
-  motorSet(flywheelThree, 50);
-  motorSet(flywheelFour, 50);
-}
-
 void flywheelStop() {			//Stop Flywheel
   motorSet(flywheelOne, 0);
   motorSet(flywheelTwo, 0);
@@ -137,7 +130,7 @@ void stopAll() {
 Encoder speedEnc;
 void autonomous() {
   int speed;
-  int targetSpeed = 83;
+  int targetSpeed = 85;
   Encoder left;
   Encoder right;
 
@@ -161,12 +154,10 @@ void autonomous() {
       lcdPrint(uart1, 2, "%d", encoderGet(speedEnc));
       speed = encoderSpeed();
       
-      if(speed < targetSpeed){ //Flywheel control statements. Turns them on if they aren't fast enough, turns it of if it's too fast.
+      if(speed < targetSpeed - 1){ //Flywheel control statements. Turns them on if they aren't fast enough, turns it of if it's too fast.
 	flywheelStart();
-      }else if (speed > targetSpeed) {
-	flywheelHalf();
-      }else if (speed > targetSpeed + 4){ //If flywheel is too fast, slow down
-      flywheelStop();
+      } else if (speed > targetSpeed + 1){ //If flywheel is too fast, slow down
+	flywheelStop();
       }
       
       if((speed > targetSpeed - 1) && (speed < targetSpeed + 2)){ //Ball control loop. Make the added values larger to make it less accurate
@@ -175,7 +166,7 @@ void autonomous() {
 	stopBallControl();
       }
       
-      if((speed > targetSpeed - 2) && (speed < targetSpeed + 2)){ //Conveyor control loop. Make the conveyor run a little more than the ballControl.
+      if((speed > targetSpeed - 3) && (speed < targetSpeed + 3)){ //Conveyor control loop. Make the conveyor run a little more than the ballControl.
 	conveyorForward();
       } else {
 	conveyorStop();
@@ -186,26 +177,20 @@ void autonomous() {
 	break;
       }
     }
-    while(encoderGet(left) < 2000 && encoderGet(right) < 2000){
+    while(encoderGet(left) < 1500 && encoderGet(right) < 1500){
       lcdPrint(uart1, 1, "%d Right", encoderGet(right));
       lcdPrint(uart1, 2, "%d Left", encoderGet(left));
       forwardOuttake();
-    }
-    while(1) {
-      
     }
 
     /////////////////////////SKILLS AUTONOMOUS/////////////////////////////////
   } else if (digitalRead(1) == LOW) {
     while(1){
-      lcdPrint(uart1, 1, "SKILL");
       speed = encoderSpeed();
       
-      if(speed < targetSpeed){ //Flywheel control statements. Turns them on if they aren't fast enough, turns it of if it's too fast.
+      if(speed < targetSpeed - 1){ //Flywheel control statements. Turns them on if they aren't fast enough, turns it of if it's too fast.
 	flywheelStart();
-      }else if (speed > targetSpeed) {
-	flywheelHalf();
-      }else if (speed > targetSpeed + 4){ //If flywheel is too fast, slow down
+      } else if (speed > targetSpeed + 1){ //If flywheel is too fast, slow down
 	flywheelStop();
       }
       

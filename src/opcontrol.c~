@@ -158,15 +158,15 @@ void operatorControl() {
     
     
     if(joystickGetDigital(1, 8, JOY_UP)){ //Set target speed to 85
-      targetSpeed = 83;
+      targetSpeed = 85;
     }
     
     if(joystickGetDigital(1, 8, JOY_LEFT)){ //Set target speed to 69
-      targetSpeed = 65;
+      targetSpeed = 69;
     }
     
     if(joystickGetDigital(1, 8, JOY_RIGHT)){ //Set target speed to 63
-      targetSpeed = 59;
+      targetSpeed = 63;
     }
     
     if(joystickGetDigital(1, 8, JOY_DOWN)){ //Set flywheels to off
@@ -179,7 +179,7 @@ void operatorControl() {
       motorSet(flywheelTwo, 127);
       motorSet(flywheelThree, 127);
       motorSet(flywheelFour, 127);
-    } else if(speed > targetSpeed && targetSpeed > 80) {
+    } else if(speed > targetSpeed && targetSpeed != 0) {
       motorSet(flywheelOne, 50);
       motorSet(flywheelTwo, 50);
       motorSet(flywheelThree, 50);
