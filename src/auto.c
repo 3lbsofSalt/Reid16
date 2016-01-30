@@ -149,15 +149,13 @@ void autonomous() {
   encoderReset(right);
   encoderReset(speedEnc);
   
-  pinMode(1, INPUT);
   lcdInit(uart1);
   lcdSetBacklight(uart1, true);
 
-
   ///////////////MATCH AUTONOMOUS////////////////
-  if(digitalRead(1) == HIGH){
+  if(digitalRead(7) == HIGH){
     while(1){
-      lcdPrint(uart1, 1, "FRICK");
+      lcdPrint(uart1, 1, "SWEET AUTO");
       lcdPrint(uart1, 2, "%d", encoderGet(speedEnc));
       speed = encoderSpeed();
       
@@ -196,9 +194,9 @@ void autonomous() {
     }
 
     /////////////////////////SKILLS AUTONOMOUS/////////////////////////////////
-  } else if (digitalRead(1) == LOW) {
+  } else if (digitalRead(7) == LOW) {
     while(1){
-      lcdPrint(uart1, 1, "SKILL");
+      lcdPrint(uart1, 1, "SKILLS AUTO");
       speed = encoderSpeed();
       
       if(speed < targetSpeed){ //Flywheel control statements. Turns them on if they aren't fast enough, turns it of if it's too fast.
