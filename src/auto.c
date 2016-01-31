@@ -137,7 +137,7 @@ void stopAll() {
 Encoder speedEnc;
 void autonomous() {
   int speed;
-  int targetSpeed = 83;
+  int targetSpeed = 82;
   Encoder left;
   Encoder right;
 

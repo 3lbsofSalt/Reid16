@@ -158,11 +158,11 @@ void operatorControl() {
     
     
     if(joystickGetDigital(1, 8, JOY_UP)){ //Set target speed to 85
-      targetSpeed = 83;
+      targetSpeed = 82;
     }
     
     if(joystickGetDigital(1, 8, JOY_LEFT)){ //Set target speed to 69
-      targetSpeed = 65;
+      targetSpeed = 64;
     }
     
     if(joystickGetDigital(1, 8, JOY_RIGHT)){ //Set target speed to 63
