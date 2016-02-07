@@ -49,6 +49,8 @@
 extern "C" {
 #endif
 
+extern Encoder right;
+extern Encoder left;
 extern Encoder speedEnc;
 
 // A function prototype looks exactly like its declaration, but with a semicolon instead of

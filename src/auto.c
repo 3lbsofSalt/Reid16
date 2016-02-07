@@ -62,6 +62,19 @@ const int flywheelOne = 9;
 const int flywheelFour = 8;
 const int intake = 5;
 
+void stopAll() {
+  motorSet(frontLeftDrive, 0);
+  motorSet(backLeftDrive, 0);
+  motorSet(backRightDrive, 0);
+  motorSet(frontRightDrive, 0);
+  motorSet(intake, 0);
+  motorSet(flywheelOne, 0);
+  motorSet(flywheelTwo, 0);
+  motorSet(flywheelThree, 0);
+  motorSet(flywheelFour, 0);
+  motorSet(ballControl, 0);
+}
+
 int encoderSpeed(){				//Gets encoder speed.
   int old;
   int new;
@@ -113,37 +126,75 @@ void stopBallControl() {		//Stop balls from shooting
   motorSet(ballControl, 0);
 }
 
-void forwardOuttake() {
-  motorSet(frontLeftDrive, 127);
-  motorSet(backLeftDrive, 127);
-  motorSet(backRightDrive, 127);
-  motorSet(frontRightDrive, -127);
-  motorSet(intake, -127);
+void forwardIntake(int dist){
+	while(encoderGet(left) < dist && encoderGet(right) < dist){
+		motorSet(frontLeftDrive, 127);
+		motorSet(backLeftDrive, 127);
+		motorSet(backRightDrive, 127);
+		motorSet(frontRightDrive, -127);
+		motorSet(intake, 127);
+		conveyorForward();
+	}
+    stopAll();
+    encoderReset(left);
+    encoderReset(right);
 }
 
-void stopAll() {
-  motorSet(frontLeftDrive, 0);
-  motorSet(backLeftDrive, 0);
-  motorSet(backRightDrive, 0);
-  motorSet(frontRightDrive, 0);
-  motorSet(intake, 0);
-  motorSet(flywheelOne, 0);
-  motorSet(flywheelTwo, 0);
-  motorSet(flywheelThree, 0);
-  motorSet(flywheelFour, 0);
-  motorSet(ballControl, 0);
+void forwardOuttake(int dist) {
+	while(encoderGet(left) < dist && encoderGet(right) < dist){
+		motorSet(frontLeftDrive, 127);
+		motorSet(backLeftDrive, 127);
+		motorSet(backRightDrive, 127);
+		motorSet(frontRightDrive, -127);
+		motorSet(intake, -127);
+		conveyorBackward();
+	}
+	stopAll();
+	encoderReset(left);
+	encoderReset(right);
 }
 
+void rightTurn(int dist)  {
+	while(encoderGet(left) < dist && encoderGet(right) > -dist){
+		motorSet(frontLeftDrive, 127);
+		motorSet(backLeftDrive, 127);
+		motorSet(backRightDrive, -127);
+		motorSet(frontRightDrive, 127);
+	}
+    stopAll();
+    encoderReset(left);
+    encoderReset(right);
+}
+
+void leftTurn(int dist) {
+	while(encoderGet(left) > -dist && encoderGet(right) < dist){
+		motorSet(frontLeftDrive, -127);
+		motorSet(backLeftDrive, -127);
+		motorSet(backRightDrive, 127);
+		motorSet(frontRightDrive, -127);
+	}
+    stopAll();
+    encoderReset(left);
+    encoderReset(right);
+}
+
+Encoder left;
+Encoder right;
 Encoder speedEnc;
 void autonomous() {
   int speed;
-  int targetSpeed = 82;
-  Encoder left;
-  Encoder right;
+  int targetSpeed = 83;
+  int side = 0;
 
+  if(!left){
   left = encoderInit(3, 4, 1);
+  }
+  if(!right){
   right = encoderInit(5, 6, 1);
+  }
+  if(!speedEnc){
   speedEnc = encoderInit(1, 2, 0);
+  }
 
   encoderReset(left);
   encoderReset(right);
@@ -151,6 +202,12 @@ void autonomous() {
   
   lcdInit(uart1);
   lcdSetBacklight(uart1, true);
+
+  if(digitalRead(8) == HIGH){
+	  side = 1;
+  } else {
+	  side = 0;
+  }
 
   ///////////////MATCH AUTONOMOUS////////////////
   if(digitalRead(7) == HIGH){
@@ -160,37 +217,72 @@ void autonomous() {
       speed = encoderSpeed();
       
       if(speed < targetSpeed){ //Flywheel control statements. Turns them on if they aren't fast enough, turns it of if it's too fast.
-	flywheelStart();
+    	  flywheelStart();
       }else if (speed > targetSpeed) {
-	flywheelHalf();
+    	  flywheelHalf();
       }else if (speed > targetSpeed + 4){ //If flywheel is too fast, slow down
-      flywheelStop();
+    	  flywheelStop();
       }
       
-      if((speed > targetSpeed - 1) && (speed < targetSpeed + 2)){ //Ball control loop. Make the added values larger to make it less accurate
-	runBallControl();
+      if((speed > targetSpeed - 1) && (speed < targetSpeed + 1)){ //Ball control loop. Make the added values larger to make it less accurate
+    	  runBallControl();
       } else {
-	stopBallControl();
+    	  stopBallControl();
       }
       
-      if((speed > targetSpeed - 2) && (speed < targetSpeed + 2)){ //Conveyor control loop. Make the conveyor run a little more than the ballControl.
-	conveyorForward();
+      if((speed > targetSpeed - 3) && (speed < targetSpeed + 3)){ //Conveyor control loop. Make the conveyor run a little more than the ballControl.
+    	  conveyorForward();
       } else {
-	conveyorStop();
+    	  conveyorStop();
       }
-      if(encoderGet(speedEnc) > 50000){
-	stopAll();
-        lcdPrint(uart1, 1, "Stopped");
-	break;
+      if(encoderGet(speedEnc) > 27000){
+    	  stopAll();
+    	  lcdPrint(uart1, 1, "Stopped");
+    	  break;
       }
     }
-    while(encoderGet(left) < 2000 && encoderGet(right) < 2000){
-      lcdPrint(uart1, 1, "%d Right", encoderGet(right));
-      lcdPrint(uart1, 2, "%d Left", encoderGet(left));
-      forwardOuttake();
+
+    if(side == 0){
+    	rightTurn(30);
+    	forwardIntake(800);
+    	leftTurn(100);
+    } else if (side == 1){
+    	leftTurn(40);
+    	forwardIntake(800);
+    	rightTurn(100);
     }
+
+    targetSpeed = 77;
+
+    conveyorForward();
     while(1) {
-      
+      lcdPrint(uart1, 1, "HOT DANG!");
+      lcdPrint(uart1, 2, "%d Flywheel", encoderGet(speedEnc));
+      speed = encoderSpeed();
+
+      //Shoot balls at short range
+      if((speed > targetSpeed - 5) && (speed < targetSpeed)) {
+        motorSet(flywheelOne, 75);
+        motorSet(flywheelTwo, 75);
+        motorSet(flywheelThree, 75);
+        motorSet(flywheelFour, 75);
+      } else if (speed > targetSpeed){
+        motorSet(flywheelOne, 0);
+        motorSet(flywheelTwo, 0);
+        motorSet(flywheelThree, 0);
+        motorSet(flywheelFour, 0);
+      } else if(speed < targetSpeed){ //If flywheel isn't fast enough, speed up
+        motorSet(flywheelOne, 127);
+        motorSet(flywheelTwo, 127);
+        motorSet(flywheelThree, 127);
+        motorSet(flywheelFour, 127);
+      }
+
+      if ((speed > targetSpeed - 5) && (speed < targetSpeed + 5)){
+    	  motorSet(ballControl, 127);
+      } else {
+    	  motorSet(ballControl, 0);
+      }
     }
 
     /////////////////////////SKILLS AUTONOMOUS/////////////////////////////////

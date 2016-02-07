@@ -79,6 +79,11 @@ void operatorControl() {
   const int flywheelOne = 9;
   const int flywheelFour = 8;
   const int intake = 5;
+
+  //Range constants
+  const int longRange = 83;
+  const int midRange = 68;
+  const int shortRange = 59;
   
   //LCD Backlight
   lcdSetBacklight(uart1, true);
@@ -102,12 +107,13 @@ void operatorControl() {
   while (1) {
     
     speed = encoderSpeedOp(); //Get the flywheel distance
-    /* lcdPrint(uart1, 1, "%d TargetSpeed", targetSpeed); */
+    lcdPrint(uart1, 1, "%d TargetSpeed", targetSpeed);
     lcdPrint(uart1, 2, "%d Speed", speed);
     
     xAxis = joystickGetAnalog(1, 1); //Assigns joystick value to X Axis variable
     yAxis = joystickGetAnalog(1, 2); //Assigns joystick value to Y Axis variable
     
+
     /////////
     //DRIVE//
     /////////
@@ -124,6 +130,7 @@ void operatorControl() {
       motorSet(frontRightDrive, 0);
     }
     
+
     //////////
     //INTAKE//
     //////////
@@ -138,57 +145,96 @@ void operatorControl() {
       motorSet(intake, 0);
     }
     
+
     /////////////////////
     //BALL CONTROL LOOP//
     /////////////////////
     
-    if((joystickGetDigital(1, 6, JOY_DOWN) && (speed > targetSpeed - 1) && (speed < targetSpeed + 2)) || joystickGetDigital(1, 7, JOY_UP)){ //Won't the ball shoot unless flywheel is at +- 3 to the correct RPM
+    //If statement for long range shots
+    if((joystickGetDigital(1, 6, JOY_DOWN) && (speed > targetSpeed - 1) && (speed < targetSpeed + 1) && (targetSpeed == longRange)) || joystickGetDigital(1, 7, JOY_UP)){ //Won't the ball shoot unless flywheel is at +- 3 to the correct RPM
+      motorSet(ballControl, 127);
+
+      //If statement for mid range shots
+    } else if ((joystickGetDigital(1, 6, JOY_DOWN) && (speed > targetSpeed - 2) && (speed < targetSpeed + 2) && (targetSpeed == midRange)) || joystickGetDigital(1, 7, JOY_UP)) {
+      motorSet(ballControl, 127);
+
+      //If statement for short range shots
+    } else if ((joystickGetDigital(1, 6, JOY_DOWN) && (speed > targetSpeed - 3) && (speed < targetSpeed + 3) && (targetSpeed == shortRange)) || joystickGetDigital(1, 7, JOY_UP)) {
       motorSet(ballControl, 127);
     } else {
       motorSet(ballControl, 0);
     }
     
+
     ////////////
     //FLYWHEEL//
     ////////////
     
-    //From square = 86
-    //Midfield = 69
-    //1 Square away = 63
-    
-    
     if(joystickGetDigital(1, 8, JOY_UP)){ //Set target speed to 85
-      targetSpeed = 82;
+      targetSpeed = longRange;
     }
     
     if(joystickGetDigital(1, 8, JOY_LEFT)){ //Set target speed to 69
-      targetSpeed = 64;
+      targetSpeed = midRange;
     }
     
     if(joystickGetDigital(1, 8, JOY_RIGHT)){ //Set target speed to 63
-      targetSpeed = 59;
+      targetSpeed = shortRange;
     }
     
-    if(joystickGetDigital(1, 8, JOY_DOWN)){ //Set flywheels to off
+    if(joystickGetDigital(1, 7, JOY_DOWN)){ //Set flywheels to off
       targetSpeed = 0;
     }
     
-    
-    if(speed < targetSpeed){ //If flywheel isn't fast enough, speed up
-      motorSet(flywheelOne, 127);
-      motorSet(flywheelTwo, 127);
-      motorSet(flywheelThree, 127);
-      motorSet(flywheelFour, 127);
-    } else if(speed > targetSpeed && targetSpeed > 80) {
-      motorSet(flywheelOne, 50);
-      motorSet(flywheelTwo, 50);
-      motorSet(flywheelThree, 50);
-      motorSet(flywheelFour, 50);
-    } else if (speed > targetSpeed + 4){ //If flywheel is too fast, slow down
+    //Long Range Flywheel Loop
+    if(speed > targetSpeed && targetSpeed == longRange) {
+      motorSet(flywheelOne, 51);
+      motorSet(flywheelTwo, 51);
+      motorSet(flywheelThree, 51);
+      motorSet(flywheelFour, 51);
+    } else if (speed > targetSpeed + 4 && targetSpeed == longRange){
       motorSet(flywheelOne, 0);
       motorSet(flywheelTwo, 0);
       motorSet(flywheelThree, 0);
       motorSet(flywheelFour, 0);
+    }
+
+    //Mid Range Flywheel Loop
+    else if((speed > targetSpeed - 5) && (speed < targetSpeed) && (targetSpeed == midRange)) {
+      motorSet(flywheelOne, 110);
+      motorSet(flywheelTwo, 110);
+      motorSet(flywheelThree, 110);
+      motorSet(flywheelFour, 110);
+    } else if (speed > targetSpeed && targetSpeed == midRange){
+      motorSet(flywheelOne, 0);
+      motorSet(flywheelTwo, 0);
+      motorSet(flywheelThree, 0);
+      motorSet(flywheelFour, 0);
+    }
+
+    //Short Range Flywheel Loop
+    else if((speed > targetSpeed - 5) && (speed < targetSpeed) && (targetSpeed == shortRange)) {
+      motorSet(flywheelOne, 75);
+      motorSet(flywheelTwo, 75);
+      motorSet(flywheelThree, 75);
+      motorSet(flywheelFour, 75);
+    } else if (speed > targetSpeed && targetSpeed == shortRange){
+      motorSet(flywheelOne, 0);
+      motorSet(flywheelTwo, 0);
+      motorSet(flywheelThree, 0);
+      motorSet(flywheelFour, 0);
+    }
+
+    else if(speed < targetSpeed){ //If flywheel isn't fast enough, speed up
+      motorSet(flywheelOne, 127);
+      motorSet(flywheelTwo, 127);
+      motorSet(flywheelThree, 127);
+      motorSet(flywheelFour, 127);
+    } else if (speed > targetSpeed){
+    	motorSet(flywheelOne, 0);
+    	motorSet(flywheelTwo, 0);
+    	motorSet(flywheelThree, 0);
+    	motorSet(flywheelFour, 0);
     }
 
     /////////////
